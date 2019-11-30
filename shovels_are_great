@@ -1,0 +1,25 @@
+FirePoi fire[];
+
+void setup() {
+  size(600, 300);
+  background(0);
+  
+  fire = new FirePoi[900];
+    
+  for (int i = 0; i < fire.length; i++)
+    fire[i] = new FirePoi(); 
+}
+
+void draw() {
+  fade(20);
+  
+  for (FirePoi f : fire) {
+    f.show();
+    f.move();
+  }
+}
+
+void fade(float alpha) {
+  fill(0, alpha);
+  rect(0, 0, width, height);  
+}
