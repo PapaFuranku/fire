@@ -1,3 +1,5 @@
+import java.util.Random;
+
 FirePoi fire[];
 
 void setup() {
@@ -23,3 +25,85 @@ void fade(float alpha) {
   fill(0, alpha);
   rect(0, 0, width, height);  
 }
+
+//#########################some other stuff#######################
+
+class FirePoi {
+  PVector position, velocity, acceleration;
+  Random gen;
+  float alpha;
+  float red, green, blue; // the bone
+  float majorAx, minorAx;
+  float xNoise, yNoise;
+  
+  FirePoi() {
+    gen = new Random();
+    position = new PVector(width / 2 + (float)gen.nextGaussian() * width / 10, height + 10);
+    velocity = new PVector(random(-1, 1), random(-1, -.05));
+    acceleration = new PVector(random(-1, 1), random(-1, -.1));
+    
+    alpha = 100;
+    red = random(250, 255);
+    green = random(200, 225);
+    blue = random(10, 50);
+    
+    majorAx = random(10, 20);
+    minorAx = random(10, 20);
+    
+    xNoise = random(1000);
+    yNoise = random(1000);
+  }
+  
+  void move() {
+    float xOff, yOff;
+    PVector force;
+    
+    xOff = map(noise(xNoise), 0, 1, -.01, .01);
+    yOff = map(noise(yNoise), 0, 1, -.075, .01);
+    force = new PVector(xOff, yOff);
+    
+    acceleration.add(force);
+    velocity.add(acceleration);
+    position.add(velocity);
+    
+    acceleration.mult(0);
+    
+    alpha -= .01;
+    red = map(height - position.y, 0, height, 255, 230);
+    green = map(height - position.y, 0, height, 225, 100);
+    blue = map(height - position.y, 0, height, 50, 255);
+    
+    majorAx -= random(.5);
+    minorAx -= random(.5);
+    
+    xNoise += .01;
+    yNoise += .01;
+    
+    if ( /* offScreen()|| */ alpha == 0 || majorAx < 1 || minorAx < 1)
+      reset();
+  }
+  
+  void show() {
+    fill(red, green, blue, alpha);
+    noStroke();
+    ellipse(position.x, position.y, majorAx, minorAx);
+  }
+  
+  boolean offScreen() {
+    return position.x < 0 || position.x > width || position.y < 0 || position.y > height + 10;
+  }
+  
+  void reset() {
+    alpha = 100;
+    red = random(250, 255);
+    green = random(200, 225);
+    blue = random(10, 50);
+    
+    majorAx = random(10, 20);
+    minorAx = random(10, 20);
+    
+    position = new PVector(width / 2 + (float)gen.nextGaussian() * width / 10, height + 10);
+    velocity = new PVector(random(-1, 1), random(-1, 0));
+    acceleration = new PVector(random(-1, 1), random(-1, 0));
+  }
+};
